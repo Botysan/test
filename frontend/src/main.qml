@@ -20,6 +20,7 @@
 
 import QtQuick 2.9
 import QtQuick.Window 2.2
+import QtQuick.Controls 2.5
 
 Window {
     id: root
@@ -49,6 +50,38 @@ Window {
             angle: model.angle
             color: model.color
             mouth: model.mouth
+        }
+    }
+
+    Button {
+        id: buttonSpeedUp
+        x: 0
+        y: parent.height * 0.9
+
+        text: "+"
+
+        width: parent.width / 2
+        height: parent.height * 0.1
+
+        onClicked: {
+            for (var i = 0; i < smiles.length; i++)
+                smiles[i].SetSpeedUp();
+        }
+    }
+    Button {
+        id: buttonSpeedDown
+        x: buttonSpeedUp.x + buttonSpeedUp.width
+        y: buttonSpeedUp.y
+
+
+        text: "-"
+
+        width: buttonSpeedUp.width
+        height: buttonSpeedUp.height
+
+        onClicked: {
+            for (var i = 0; i < smiles.length; i++)
+                smiles[i].SetSpeedDown();
         }
     }
 }

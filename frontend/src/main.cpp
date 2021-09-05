@@ -38,6 +38,7 @@ class Smile : public QObject
     Q_PROPERTY(QString color MEMBER m_strColor NOTIFY colorChanged)
     Q_PROPERTY(bool mouth MEMBER m_bMouthSmile NOTIFY mouthChanged)
 
+
 public:
     Smile(QString strColor, qint32 nRotationSpeed, bool bRotationDirection, bool bMouth) : QObject(), m_strColor(strColor), m_bMouthSmile(bMouth)
     {
@@ -55,6 +56,25 @@ public:
         });
         m_RotationTimer.start(nRotationSpeed);
         emit mouthChanged(m_bMouthSmile);
+    }
+
+public slots:
+
+    #define dSpeed 2
+    Q_INVOKABLE void SetSpeedUp()
+    {
+        m_RotationTimer.setInterval(qMax(m_RotationTimer.interval() - dSpeed, 1));
+    }
+
+    Q_INVOKABLE void SetSpeedDown()
+    {
+        m_RotationTimer.setInterval(qMax(m_RotationTimer.interval() + dSpeed, 1));
+    }
+
+    Q_INVOKABLE void SetColorChange()
+    {
+        m_strColor = "black";
+        emit colorChanged(m_strColor);
     }
 
 private:
@@ -89,7 +109,7 @@ int main(int nArgc, char *p_arrArgv[])
     };
 
     QList<QObject*> arrSmiles;
-    arrSmiles.append(new Smile("#6b8e23", /*GetRandomSpeed()*/1000000, GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#6b8e23", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
     arrSmiles.append(new Smile("#ffa500", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
     arrSmiles.append(new Smile("#ff4500", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
     arrSmiles.append(new Smile("#da70d6", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));

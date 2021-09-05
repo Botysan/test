@@ -56,15 +56,7 @@ Item {
             radius: width / 2
             color: "white"
         }
-//        Rectangle {
-//            anchors.verticalCenter: parent.verticalCenter
-//            anchors.horizontalCenter: parent.horizontalCenter
-//            width: parent.width * 0.75
-//            height: parent.height * 0.75
 
-//            radius: width * 0.75
-//            color: "white"
-//        }
         Canvas {
             anchors.fill: parent
             onPaint: {
@@ -72,21 +64,24 @@ Item {
                 ctx.reset();
 
                 var cX = width / 2;
-                var cY = height / 2;
 
                 ctx.beginPath();
                 ctx.lineWidth = width * 0.01;
                 ctx.strokeStyle  = "white";
 
                 if(mouth === true)
-                    ctx.arc(cX , cY, width / 4, -Math.PI * 1.25, Math.PI * 0.25, true);
+                    ctx.arc(cX , height / 2, width / 4, -Math.PI * 1.25, Math.PI * 0.25, true);
                 else
-                {
-                    cX = width / 2;
-                    cY = height;
-                    ctx.arc(cX , cY, width / 4, -Math.PI * 0.25, Math.PI * 1.25, true);
-                }
+                    ctx.arc(cX , height, width / 4, -Math.PI * 0.25, Math.PI * 1.25, true);
+
                 ctx.stroke();
+            }
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                console.info("clicked");
+                modelData.SetColorChange();
             }
         }
     }
