@@ -36,9 +36,10 @@ class Smile : public QObject
 
     Q_PROPERTY(qint32 angle MEMBER m_nAngle NOTIFY angleChanged)
     Q_PROPERTY(QString color MEMBER m_strColor NOTIFY colorChanged)
+    Q_PROPERTY(bool mouth MEMBER m_bMouthSmile NOTIFY mouthChanged)
 
 public:
-    Smile(QString strColor, qint32 nRotationSpeed, bool bRotationDirection) : QObject(), m_strColor(strColor)
+    Smile(QString strColor, qint32 nRotationSpeed, bool bRotationDirection, bool bMouth) : QObject(), m_strColor(strColor), m_bMouthSmile(bMouth)
     {
         connect(&m_RotationTimer, &QTimer::timeout, [this, bRotationDirection]() {
             m_nAngle += bRotationDirection ? 2 : -2;
@@ -53,6 +54,7 @@ public:
             emit angleChanged(m_nAngle);
         });
         m_RotationTimer.start(nRotationSpeed);
+        emit mouthChanged(m_bMouthSmile);
     }
 
 private:
@@ -61,9 +63,13 @@ private:
 
     QTimer m_RotationTimer;
 
+    bool m_bMouthSmile;//we can use emun/or class mouth in this place
+    //if we use emun/or class, we can easily add or modify the mouth without changing the smile class
+
 signals:
     void angleChanged(qint32 angle);
     void colorChanged(QString color);
+    void mouthChanged(bool mouth);
 };
 
 int main(int nArgc, char *p_arrArgv[])
@@ -78,19 +84,23 @@ int main(int nArgc, char *p_arrArgv[])
         return (qrand() % 2) ? true : false;
     };
 
+    auto GetRandomMouth = []() {
+        return (qrand() % 2) ? true : false;
+    };
+
     QList<QObject*> arrSmiles;
-    arrSmiles.append(new Smile("#6b8e23", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#ffa500", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#ff4500", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#da70d6", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#eee8aa", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#98fb98", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#afeeee", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#db7093", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#ffefd5", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#ffdab9", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#cd853f", GetRandomSpeed(), GetRandomDirection()));
-    arrSmiles.append(new Smile("#ffc0cb", GetRandomSpeed(), GetRandomDirection()));
+    arrSmiles.append(new Smile("#6b8e23", /*GetRandomSpeed()*/1000000, GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#ffa500", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#ff4500", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#da70d6", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#eee8aa", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#98fb98", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#afeeee", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#db7093", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#ffefd5", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#ffdab9", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#cd853f", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
+    arrSmiles.append(new Smile("#ffc0cb", GetRandomSpeed(), GetRandomDirection(), GetRandomMouth()));
 
     QQmlApplicationEngine Engine;
     QQmlContext *pContext = Engine.rootContext();

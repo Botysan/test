@@ -48,6 +48,7 @@ Window {
 
             angle: model.angle
             color: model.color
+            mouth: model.mouth
         }
     }
 }
