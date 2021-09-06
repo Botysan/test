@@ -122,7 +122,7 @@ int main(int nArgc, char *p_arrArgv[])
     //at the time of exit the created thread is not deleted,
     //in particular it may be the situation when this thread
     //is in the sleep method
-    //Scanner::Terminate does not guarantee that the thread will end
+    //the next windows event
 
     return App.exec();
 }
@@ -168,7 +168,7 @@ void Scanner::OnNewFilter(QStringList strFilterList)
 Reporter::Reporter(QObject *pScanner)
 {
     connect(pScanner, SIGNAL(Change(QString)), this, SLOT(OnChange(QString)));
-    connect(this, SIGNAL(newFilter(QStringList)), pScanner, SLOT(OnChange(QString)));
+    connect(this, SIGNAL(newFilter(QStringList)), pScanner, SLOT(OnNewFilter(QStringList)));
 
     connect(&m_readTimer, &QTimer::timeout, [=](){
         QTextStream s(stdin);

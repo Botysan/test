@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QTimer>
 #include <QSet>
-#include <QDir>
 
 class Scanner : public QObject
 {
@@ -13,17 +12,21 @@ public:
     explicit Scanner(QObject *parent = nullptr);
 
 public slots:
-    void Initialize(QString strPath);
+    void Initialize(QString strPath, bool bSubDirCheck);
     void OnNewFilter(QString strFilter);
 
 signals:
     void Change(QString strChange);
 
 private slots:
-    void CheckDir();
+    void ScanDir();
 
 private:
+    QSet<QString> GetFileSet(QString strDirPath);
+
     QTimer *m_checkTimer;
+
+    bool m_bSubDirCheck;
 
     QSet<QString> m_arrLastFiles;
     QString m_strPath;

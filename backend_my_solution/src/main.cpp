@@ -1,6 +1,7 @@
 #include <QCoreApplication>
 #include <QThread>
 #include <QCommandLineParser>
+#include <QDir>
 
 #include "IOManager.h"
 #include "scanner.h"
@@ -29,31 +30,46 @@ int main(int nArgc, char *p_arrArgv[])
     parser.setApplicationDescription("File system scanner program");
     parser.addHelpOption();
 
-    QCommandLineOption targetInitializeOption(QStringList() << "d" << "controled directory",//set -d key to argument
+    QCommandLineOption targetDirOption(QStringList() << "d" << "controled directory",//set -d key to argument
                                              QCoreApplication::translate("main", "Path controled directory."),
                                              QCoreApplication::translate("main", "directory"));
-    parser.addOption(targetInitializeOption);
+    parser.addOption(targetDirOption);
+
+    QCommandLineOption targetSubDirOption(QStringList() << "s" << "controled subdirectory",//set -s key to argument
+                                             QCoreApplication::translate("main", "Flag to control subdirectory"));
+    parser.addOption(targetSubDirOption);
+
     parser.process(App);
 
-    QString controlledDir;
-    if(parser.isSet(targetInitializeOption))
-        controlledDir = parser.value(targetInitializeOption);
+    QString strControlledDir;
+    if(parser.isSet(targetDirOption))
+        strControlledDir = parser.value(targetDirOption);
     else
-        controlledDir = QDir::currentPath();
+        strControlledDir = QDir::currentPath();
 
-    IOManager ConsoleManager;
+    bool bSubdirectoryControl = parser.isSet(targetSubDirOption);
+
+    IOManager ConsoleManger;
 
     QThread ScannerThread;
     Scanner FileSystemScanner;
     FileSystemScanner.moveToThread(&ScannerThread);
     ScannerThread.start();
 
-    QObject::connect(&ConsoleManager, &IOManager::InitializeEnd, &FileSystemScanner, &Scanner::Initialize);
-    QObject::connect(&ConsoleManager, &IOManager::NewFilter, &FileSystemScanner, &Scanner::OnNewFilter);
+    QObject::connect(&ConsoleManger, &IOManager::InitializeEnd, &FileSystemScanner, &Scanner::Initialize);
+    QObject::connect(&FileSystemScanner, &Scanner::Change, &ConsoleManger, &IOManager::OnChange, Qt::DirectConnection);
+    //directConnection is used because it is necessary to separate
+    //console write and read streams, in this case the slot will
+    //in this case the slot will be called in the scanner thread.
+    //It should only be used for thread-safe functions in other cases autoconnect is better
 
-    QObject::connect(&FileSystemScanner, &Scanner::Change, &ConsoleManager, &IOManager::OnChange);
+    QObject::connect(&ConsoleManger, &IOManager::NewFilter, &FileSystemScanner, &Scanner::OnNewFilter);
 
-    ConsoleManager.Initialize(controlledDir);
+    ConsoleManger.Initialize(strControlledDir, bSubdirectoryControl);
+
+    QObject::connect(&App, &QCoreApplication::aboutToQuit, [&](){
+        ScannerThread.exit();
+    });
 
     return App.exec();
 }
