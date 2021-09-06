@@ -51,7 +51,7 @@ QSet<QString> Scanner::GetFileSet(QString strDirPath) //we can use recursion ins
     {
         QDirIterator iterator(strDirPath, m_strFilterList, QDir::NoFilter, QDirIterator::Subdirectories);
         while (iterator.hasNext())
-            arrResult.insert(iterator.next());
+            arrResult.insert(iterator.next().remove(strDirPath));
     }
     else
         arrResult = QDir(strDirPath).entryList(m_strFilterList).toSet();
